@@ -1,0 +1,158 @@
+* Installation
+
+#+begin_src bash
+  mkdir express-test
+  cd express-test
+  npm init --yes
+  npm install express
+  touch server.js
+#+end_src
+
+
+Default server:
+#+begin_src js
+  const http = require('http');
+  const express = require('express');
+  const app = express();
+
+  app.get('/', (req, res) => {
+	  res.send('Hello, this is my home Page'); //return content-type: text
+  });
+
+  app.get('/about', (req, res) => {
+	  res.send({v1:'valor 1'}); //return content-type: application/json
+  });
+
+  const server = http.createServer(app);
+  server.listen(3000);
+  console.log('My express web server is alive and running at port 3000');
+
+#+end_src
+
+
+* Middleware
+
+Example of middleware log, create file modules/logger.js
+#+begin_src js 
+  var logger = function(req, res, next) {
+
+	  var method = req.method;
+	  var path = req.path;
+
+	  console.log(method +' ' +path);
+	  next();
+  }
+
+  module.exports = logger;
+
+#+end_src
+
+Implement logger before each call 
+#+begin_src js 
+  const logger = require('./modules/logger');
+  const app = express();
+
+  app.use(logger);
+
+#+end_src
+
+* Capture params
+
+#+begin_src js
+  app.get('/p/:name?', (req, res) => { res.send(req.params.name); });
+#+end_src
+
+
+* Multiple calls
+use send to continue the next call
+
+#+begin_src js
+  var r1 = (req, res, next ) => {
+	  console.log('r1 .. > next');
+	  next();
+  }
+
+  var r2 = (req, res, next) => {
+	  console.log('r2 .. > next');
+	  next();
+  }
+
+  var r3 = (req, res) => {
+	  console.log( 'r3 ..> next' );
+	  res.send('hola mundo');
+  }
+
+  app.get('/', [r1, r2, r3]);
+#+end_src
+
+
+* Typescript
+install typescript
+
+#+begin_src sh
+  npm i -D typescript @types/express @types/node
+  npm install dotenv
+  npx tsc --init
+  touch index.ts
+  echo "PORT=3000" > .env
+#+end_src
+
+edit tsconfig.json and change the outDir 
+
+#+begin_src js
+  {
+	  "compilerOptions": {
+		  "outDir": "./dist"
+
+		  // rest options remain same
+	  }
+  }
+#+end_src
+
+
+Edit the index.js
+#+begin_src js
+  import express, { Express, Request, Response } from 'express';
+  import dotenv from 'dotenv';
+
+  dotenv.config();
+
+  const app: Express = express();
+  const port = process.env.PORT;
+
+  app.get('/', (req: Request, res: Response) => {
+	  res.send('Express + TypeScript Server');
+  });
+
+  app.listen(port, () => {
+	  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  });
+#+end_src
+
+** developer mode
+#+begin_src sh
+npm install -D concurrently nodemon  
+#+end_src
+
+edit package.json
+
+#+begin_src js
+  {
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+  }
+}
+#+end_src
+
+and run dev 
+#+begin_src sh
+  npm run dev 
+#+end_src
+
+** build prod
+
+#+begin_src sh
+  npm run build
+#+end_src

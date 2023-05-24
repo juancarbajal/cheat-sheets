@@ -1,0 +1,277 @@
+
+* Instalación de Webpack
+
+#+begin_src sh
+  mkdir tutorial-webpack
+  cd tutorial-webpack
+  npm init -y
+  npm i -D webpack webpack-cli
+#+end_src
+
+* Creación y configuración del proyecto
+
+Creamos un proyecto
+#+begin_src sh
+  mkdir src
+  touch src/index.js
+  echo "console.log('test')" > src/index.js
+#+end_src
+
+Creamos webpack.config.js 
+
+#+begin_src sh
+  touch webpack.config.js
+#+end_src
+
+El contenido del archivo webpack.config.js será
+
+#+begin_src js
+  const path = require('path');
+
+  module.exports = {
+	  entry: {
+		  main: path.resolve(__dirname, './src/index.js'),
+	  },
+	  output: {
+		  path: path.resolve(__dirname, './dist'),
+		  filename: '[name].bundle.js',
+	  },
+  }
+#+end_src
+
+Configuramos el package.json para que el build use webpack
+
+#+begin_src js
+  "scripts": {
+	  "build": "webpack"
+  }
+
+#+end_src
+
+* Compilamos
+
+Ejecutamos
+#+begin_src bash
+  npm run build 
+#+end_src
+
+
+* Plugins
+
+** Plugin de html
+
+debemos instalar el paquete para el manejo de plugins 
+#+begin_src bash
+  npm i -D html-webpack-plugin  
+#+end_src
+
+Creamos el archivo src/plantilla.html
+#+begin_src html
+  <!DOCTYPE html>
+	<html lang="es">
+	  <head>
+		<title><%= htmlWebpackPlugin.options.title %></title>
+	  </head>
+
+	  <body>
+		<div id="root"></div>
+	  </body>
+	</html>
+#+end_src
+
+Modificamos el archivo webpack.config.js 
+#+begin_src js
+	const path = require('path');
+  const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+  module.exports = {
+	output: {
+	  path: path.resolve(__dirname, './dist'),
+	  filename: '[name].bundle.js',
+	},
+	plugins: [
+	  new HtmlWebpackPlugin({
+		title: 'Tutorial Webpack',
+		template: path.resolve(__dirname, './src/plantilla.html'),
+		filename: 'index.html',
+	  }),
+	],
+  }
+#+end_src
+
+Luego ejecutamos
+#+begin_src sh
+  npm run build 
+#+end_src
+
+* vemos que se recreen todos los archivos cada builds
+
+#+begin_src sh
+  npm i -D clean-webpack-plugin
+#+end_src
+
+Configuramos webpack.config.js 
+#+begin_src js
+  const path = require('path');
+  const HtmlWebpackPlugin = require('html-webpack-plugin');
+  const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+
+  module.exports = {
+	entry: {
+	  main: path.resolve(__dirname, './src/index.js'),
+	},
+  }
+
+  module.exports = {
+	output: {
+	  path: path.resolve(__dirname, './dist'),
+	  filename: '[name].bundle.js',
+	},
+	plugins: [
+	  new HtmlWebpackPlugin({
+		title: 'Tutorial Webpack',
+		template: path.resolve(__dirname, './src/plantilla.html'),
+		filename: 'index.html',
+	  }),
+	  new CleanWebpackPlugin(),
+	],
+  }
+#+end_src
+
+
+* Módulos
+
+Vamos a trabajar con babel 
+#+begin_src sh
+  npm i -D babel-loader @babel/core @babel/preset-env @babel/preset-env @babel/plugin-proposal-class-properties
+#+end_src
+
+Editamos el webpack.config.js para añadir babel en la carga de los js 
+
+#+begin_src js
+	module.exports = {
+	/* Código existente... */
+	module: {
+	  rules: [
+		{
+		  test: /\.js$/,
+		  exclude: /node_modules/,
+		  use: ['babel-loader'],
+		},
+	  ],
+	},
+  }
+#+end_src
+
+Configuramos babel en el archivo .babelrc
+
+* Configuración de Typescript
+
+Configuramos el modulo que reemplazara a Babel en el archivo webpack.config.js 
+#+begin_src js
+	module.exports = {
+
+	/* Código existente */
+
+	module: {
+	  rules: [
+		{
+		  test: /\.tsx?$/,
+		  exclude: /node_modules/,
+		  use: ['ts-loader'],
+		},
+	  ],
+	},
+  }
+#+end_src
+
+* Imagenes
+
+Creamos la carpeta src/images/ y añadimos un archivo png y el archivo index.js añadimos
+
+#+begin_src js
+  import imagenSrc from './images/max-payne.png';
+#+end_src
+
+añadimos el modulo encargado de imagenes en webpack.config.js 
+#+begin_src js
+	/* ... */
+
+  module: {
+	  rules: [
+		/* ... */
+		{
+		  test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
+		  type: 'asset/resource',
+		},
+	  ],
+	},
+  }
+
+#+end_src
+
+en el archivo index.js y modificamos la ultima linea 
+#+begin_src js
+  const app = document.querySelector('#root');
+  const imagen = document.createElement('img'); 
+  imagen.src = imagenSrc;
+
+  app.append(encabezado, parrafo, imagen);
+#+end_src
+
+* Fuentes
+
+En el caso de fuente añadimos el modulo 
+#+begin_src js
+  {
+	   test: /\.(woff(2)?|eot|ttf|otf|svg|)$/,
+	   type: 'asset/inline',
+  },
+
+#+end_src
+
+* Estilos
+
+#+begin_src sh 
+  npm i -D sass-loader postcss-loader css-loader style-loader postcss-preset-env node-sass
+
+#+end_src
+
+
+creamos el archivo /src/styles/main.scss
+#+begin_src css
+$font-size: 1.2rem;
+$font-color: lch(60 90 30);
+
+html {
+  font-size: $font-size;
+  color: $font-color;
+}
+#+end_src
+
+En index.js añadimos la primera linea
+
+#+begin_src js 
+import './styles/main.scss';
+#+end_src
+
+Modificamos el webpack.config.js y añadimos un nuevo export
+
+#+begin_src js
+  module.exports = {
+  plugins: {
+    'postcss-preset-env': {
+      browsers: 'last 3 versions',
+    },
+  },
+}
+#+end_src
+
+tambien debemos de añadir un nuevo modulo
+#+begin_src js
+  {
+        test: /\.(scss|css)$/,
+        use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader'],
+      },
+#+end_src
+>

@@ -1,0 +1,45 @@
+* Instalación
+
+composer create-project laravel/laravel example-app
+
+cd example-app
+php artisan serve
+
+Ver el resultado en :
+localhost:8080
+
+* Crear una vista
+Creamos un archivo que será nuestra vida
+resources/views/inicio.blade.php
+blade => usa la plantilla blade
+#+begin_src html
+  Greetings {{ $friend }}, let's build Chirper with Blade!
+#+end_src  
+
+En el archivo de ruteo añadimos el código
+routes/web.php
+
+#+begin_src php
+  Route::get('/', function(){
+	  return view('inicio', ['friend' => 'test']);
+  });
+#+end_src
+
+
+* Controlador
+
+HomeController es el archivo  del controlador e inicio sería la vista
+
+Añadimos el controlador en app/http/controllers/HomeCOntroller.php
+#+begin_src php
+  namespace App\Http\Controllers;
+
+  use Illuminate\Http\Request;
+
+  class HomeController extends Controller{
+	  public function inicio(){
+		  return view('inicio')
+			  }
+  }
+
+#+end_src

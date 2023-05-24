@@ -1,2 +1,3 @@
 # cheat-sheets
-Personal cheat-sheets of different languages or tools.
+
+Personal cheat-sheets of different tools and languages.
