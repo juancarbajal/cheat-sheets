@@ -1,0 +1,28 @@
+#+ Docker
+
+
+* Build a container
+
+- Create a Dockerfile
+  
+#+begin_src dockerfile
+FROM alpine:3.13
+CMD echo "hola mundo"
+#+end_src
+
+- Run command
+#+begin_src sh
+docker build
+docker run --name "mi-container" . 
+#+end_src
+
+* Run a container
+#+begin_src sh
+docker run --name "alpine" alpine:3.13  
+#+end_src
+
+
+* Run a console in alpine
+#+begin_src sh
+docker run --name "alpine" -it alpine:3.13 /bin/sh
+#+end_src

@@ -1,0 +1,45 @@
+#+title: Emacs
+
+* Move in file
+
+Comment region
+C-x C-;
+
+Go to begin of the line
+C-a
+Go to end of the line
+C-e
+
+Next char
+C-f
+Prev char
+C-b
+
+Next page
+C-v
+Prev page
+M-v
+
+
+Begin of the buffer
+M-<
+End of the buffer
+M->
+
+Delete word 
+M-d
+
+* Bookmark
+
+Create a bookmark
+C-x r m
+Jump to bookmark 
+C-x r b 
+
+
+* Macros
+
+Create a macro
+F3
+Save the macro
+F4

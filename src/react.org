@@ -1,0 +1,19 @@
+* React
+
+* Install
+
+#+begin_src sh
+  npx create-react-app my-app
+  cd my-app
+  npm start
+#+end_src
+
+o con npm
+#+begin_src sh
+  npm init react-app my-app
+#+end_src
+
+* Start
+#+begin_src sh
+  npm start
+#+end_src

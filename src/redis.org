@@ -1,0 +1,137 @@
+* Run in docker
+
+#+begin_src powershell
+  docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
+#+end_src
+
+* Create server Docker compose 
+
+#+begin_src yaml
+	version: "3.3"
+	services:
+	  db_redis:
+		container_name: db_redis
+		image: redis:6.2-alpine
+		restart: always
+		ports:
+		- '6379:6379'
+		command: redis-server --save 20 1 --loglevel warning # --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+		volumes: 
+		  ./redis:/data
+#+end_src
+
+
+* Connect
+
+#+begin_src bash
+  redis-cli
+#+end_src
+
+* Strings
+** Simple value 
+set KEY VALUE
+create a record in redis
+
+get KEY
+Get a record from redis 
+
+setnx KEY VALUE
+Assign value only if the key don't exists
+
+SETEX KEY SECONDS VALUE
+Set a value and expiration
+
+PSETEX KEY MILLISECONDS VALUE
+Set a value and expiration in milliseconds
+
+GETDEL KEY
+Get a value and delete de value from redis 
+
+** Multiple Keys
+
+mset KEY1 VALUE1 KEY2 VALUE2  ... KEYN VALUEN
+Register multiple values in redis
+
+mget KEY1 KEY2 KEY3
+Get multiple values in redis 
+
+** Increment a value 
+incr KEY
+increment VALUE+1
+
+incrby KEY VALUETOINC
+increment VALUE+VALUETOINC
+
+incrbyfloat KEY VALUETOINC
+Increment VALUE + FLOAT (VALUETOINC)
+
+DECR KEY
+DECRBY KEY VALUETODEC
+
+** Strings
+
+GETRANGE KEY START END 
+Get substring
+
+STRLEN KEY
+Get len of a vallue
+
+* Hashes
+HSET KEY FIELD1 VALUE1 FIELD2 VALUE2 ... FIELDN VALUEN
+Create a record with a hash table of FIELD and value
+
+HGET KEY FIELDN
+Extract a record with a KEY and HASH ID
+
+HGETALL KEY
+Extract all fields and vlaues of a hash table with a KEY
+
+HMGET KEY FIELD1 FIELD2 ... FIELDN
+Get multiple hash of a key
+
+HINCRBY KEY FIELD INCVALUE
+Increment a hash value
+
+HKEYS KEY
+Get a hash fields
+
+HVALS KEY
+Get all values of a hash table
+
+Example
+HSET bike:1 model TestModel price 13.22
+
+* List or queue
+LPUSH kEY VALUE1 VALUE2 ... VALUEN
+Add value to a head of a list
+
+LPOP KEY
+Get value of a head of a list
+
+RPUSH KEY VALUE1 VALUE2 ... VALUEN 
+Add value to a tail of a list
+
+RPOP KEY
+Get value of the tail
+
+LLEN KEY
+Return a len of a list
+
+LMOVE SOURCE DESTINATION
+move a list from source to destination
+
+LTRIM KEY START END 
+Reduce a list of a start and end
+
+
+* Streams
+** Create a stream
+#+begin_src redis 
+xgroup CREATE key1 groupA $ MKSTREAM
+#+end_src
+
+** Info of the stream
+
+#+begin_src redis
+XINFO STREAM grupo  
+#+end_src
